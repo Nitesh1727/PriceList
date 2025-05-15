@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pricelist</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Hamburger Menu -->
+    <div class="hamburger">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+
+    <!-- Top Bar -->
+    <header class="topbar">
+      <div class="profile">
+        <div class="avatar">
+          <img src="https://avatar.iran.liara.run/public" alt="John Andre">
+        </div>
+        <div class="profile-info">
+          <h3>John Andre</h3>
+          <p>Storfjord AS</p>
+        </div>
+      </div>
+      <div class="lang">
+        Norsk Bokmål
+        <img src="https://storage.123fakturere.no/public/flags/GB.png" alt="Flag">
+      </div>
+    </header>
+
+    <div class="main-wrapper">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <nav>
+          <ul>
+            <li>Invoices</li>
+            <li>Customers</li>
+            <li>My Business</li>
+            <li>Invoice Journal</li>
+            <li class="active">Price List</li>
+            <li>Multiple Invoicing</li>
+            <li>Unpaid Invoices</li>
+            <li>Offer</li>
+            <li class="disabled">Inventory Control</li>
+            <li class="disabled">Member Invoicing</li>
+            <li>Import/Export</li>
+            <li>Log out</li>
+          </ul>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <!-- Controls -->
+        <section class="controls">
+          <div class="search-inputs">
+            <input type="text" placeholder="Search Article No ..." />
+            <input type="text" placeholder="Search Product ..." />
+          </div>
+          <div class="buttons">
+            <button>New Product</button>
+            <button>Print List</button>
+            <button>Advanced mode</button>
+          </div>
+        </section>
+
+        <!-- Price List Table -->
+        <section class="pricelist">
+          <div class="table-row table-header">
+            <div>Article No. <span>↓</span></div>
+            <div>Product/Service <span>↓</span></div>
+            <div>In Price</div>
+            <div>Price</div>
+            <div>Unit</div>
+            <div>In Stock</div>
+            <div>Description</div>
+          </div>
+          <!-- Remove example row - data will be populated dynamically -->
+        </section>
+      </main>
+    </div>
+
+    <!-- New Product Modal -->
+    <div class="modal" id="newProductModal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Add New Product</h2>
+        <form id="newProductForm">
+          <div class="form-group">
+            <label for="article_no">Article No</label>
+            <input type="text" id="article_no" name="article_no" placeholder="Enter article number" required>
+          </div>
+          <div class="form-group">
+            <label for="product_service">Product/Service</label>
+            <input type="text" id="product_service" name="product_service" placeholder="Enter product name" required>
+          </div>
+          <div class="form-group">
+            <label for="price">Price</label>
+            <input type="number" id="price" name="price" step="0.01" placeholder="0.00" required>
+          </div>
+          <div class="form-group">
+            <label for="in_price">In Price</label>
+            <input type="number" id="in_price" name="in_price" step="0.01" placeholder="0.00">
+          </div>
+          <div class="form-group">
+            <label for="unit">Unit</label>
+            <input type="text" id="unit" name="unit" placeholder="e.g., piece, kg, meter">
+          </div>
+          <div class="form-group">
+            <label for="in_stock">In Stock</label>
+            <input type="number" id="in_stock" name="in_stock" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label for="description">Description</label>
+            <textarea id="description" name="description" placeholder="Enter product description"></textarea>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="cancel">Cancel</button>
+            <button type="submit">Create Product</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <script src="/js/main.js"></script>
+</body>
+</html>
