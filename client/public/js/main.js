@@ -1,4 +1,4 @@
-const API_BASE_URL = "https://pricelist-l6cm.onrender.com/products";
+const API_BASE_URL = "https://pricelist-l6cm.onrender.com/api/pricelist";
 
 let searchTimeout;
 
