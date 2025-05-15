@@ -1,0 +1,13 @@
+{
+  "name": "pricelist",
+  "version": "1.0.0",
+  "description": "Price List Frontend",
+  "main": "index.html",
+  "scripts": {
+    "start": "serve",
+    "build": "echo 'No build required'"
+  },
+  "dependencies": {
+    "serve": "^14.2.1"
+  }
+}

@@ -1,0 +1,106 @@
+{
+  "info": {
+    "name": "Pricelist API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Get All Pricelist Items",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{base_url}}/api/pricelist",
+          "host": ["{{base_url}}"],
+          "path": ["api", "pricelist"]
+        }
+      }
+    },
+    {
+      "name": "Get Pricelist Item by ID",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{base_url}}/api/pricelist/1",
+          "host": ["{{base_url}}"],
+          "path": ["api", "pricelist", "1"]
+        }
+      }
+    },
+    {
+      "name": "Create Pricelist Item",
+      "request": {
+        "method": "POST",
+        "url": {
+          "raw": "{{base_url}}/api/pricelist",
+          "host": ["{{base_url}}"],
+          "path": ["api", "pricelist"]
+        },
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": {
+            "article_no": "ART001",
+            "product_service": "Premium Widget",
+            "in_price": 50.00,
+            "price": 99.99,
+            "unit": "piece",
+            "in_stock": 100,
+            "description": "High-quality premium widget"
+          }
+        }
+      }
+    },
+    {
+      "name": "Update Pricelist Item",
+      "request": {
+        "method": "PUT",
+        "url": {
+          "raw": "{{base_url}}/api/pricelist/1",
+          "host": ["{{base_url}}"],
+          "path": ["api", "pricelist", "1"]
+        },
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": {
+            "article_no": "ART001",
+            "product_service": "Premium Widget V2",
+            "in_price": 55.00,
+            "price": 109.99,
+            "unit": "piece",
+            "in_stock": 95,
+            "description": "Updated high-quality premium widget"
+          }
+        }
+      }
+    },
+    {
+      "name": "Delete Pricelist Item",
+      "request": {
+        "method": "DELETE",
+        "url": {
+          "raw": "{{base_url}}/api/pricelist/1",
+          "host": ["{{base_url}}"],
+          "path": ["api", "pricelist", "1"]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5000",
+      "type": "string"
+    }
+  ]
+}
