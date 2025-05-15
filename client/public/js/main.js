@@ -391,6 +391,24 @@ function initializeModal() {
   };
 }
 
+// Add updateField function for editing
+async function updateField(id, field, value, cell) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ [field]: value }),
+    });
+    const result = await response.json();
+    if (!result.success) {
+      throw new Error(result.message || "Update failed");
+    }
+  } catch (error) {
+    console.error("Error updating field:", error);
+    alert("Failed to update field");
+  }
+}
+
 // Mobile menu handler
 function initializeMobileMenu() {
   const hamburger = document.querySelector(".hamburger");
