@@ -48,9 +48,13 @@ function clearAndRenderTable(items) {
 function createTableRow(item) {
   const row = document.createElement("div");
   row.className = "table-row";
-  row.dataset.id = item.id;
 
-  // Create fields
+  // Ensure we have a valid MongoDB _id
+  if (!item._id) {
+    console.error('Item missing _id:', item);
+    return row;
+  }
+
   const fields = [
     { key: "article_no", type: "text", label: "Article No" },
     { key: "product_service", type: "text", label: "Product/Service" },
@@ -72,12 +76,26 @@ function createTableRow(item) {
       input.step = "0.01";
     }
 
-    input.addEventListener("change", () =>
-      updateField(item.id, field.key, input.value, cell)
-    );
-    input.addEventListener("keypress", (e) => {
-      if (e.key === "Enter") {
-        input.blur();
+    // Store MongoDB _id with the input element
+    input.setAttribute('data-id', item._id);
+    input.setAttribute('data-field', field.key);
+    input.setAttribute('data-original', item[field.key] || '');
+
+    // Add change event for edit
+    input.addEventListener("change", async (e) => {
+      const itemId = e.target.getAttribute('data-id');
+      const fieldName = e.target.getAttribute('data-field');
+      const originalValue = e.target.getAttribute('data-original');
+      const newValue = e.target.value;
+
+      if (newValue !== originalValue && itemId) {
+        console.log(`Updating ${fieldName} for item ${itemId}:`, newValue);
+        try {
+          await updateField(itemId, fieldName, newValue);
+          e.target.setAttribute('data-original', newValue);
+        } catch (error) {
+          e.target.value = originalValue;
+        }
       }
     });
 
@@ -85,8 +103,8 @@ function createTableRow(item) {
     row.appendChild(cell);
   });
 
-  // Add action button
-  const actionButton = createActionButton(item.id);
+  // Add action button with correct MongoDB _id
+  const actionButton = createActionButton(item._id);
   row.appendChild(actionButton);
 
   return row;
@@ -391,21 +409,32 @@ function initializeModal() {
   };
 }
 
-// Add updateField function for editing
-async function updateField(id, field, value, cell) {
+// Update the updateField function
+async function updateField(id, field, value) {
+  if (!id || id === 'undefined') {
+    console.error('Invalid item ID for update:', id);
+    return;
+  }
+
   try {
+    console.log(`Making PUT request to: ${API_BASE_URL}/${id}`);
     const response = await fetch(`${API_BASE_URL}/${id}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ [field]: value }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ [field]: value })
     });
+
     const result = await response.json();
+    console.log('Update response:', result);
+
     if (!result.success) {
       throw new Error(result.message || "Update failed");
     }
   } catch (error) {
     console.error("Error updating field:", error);
-    alert("Failed to update field");
+    throw error;
   }
 }
 

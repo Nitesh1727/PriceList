@@ -48,9 +48,13 @@ function clearAndRenderTable(items) {
 function createTableRow(item) {
   const row = document.createElement("div");
   row.className = "table-row";
-  row.dataset.id = item.id;
 
-  // Create fields
+  // Use PostgreSQL id instead of MongoDB _id
+  if (!item.id) {
+    console.error("Missing id:", item);
+    return row;
+  }
+
   const fields = [
     { key: "article_no", type: "text", label: "Article No" },
     { key: "product_service", type: "text", label: "Product/Service" },
@@ -72,12 +76,26 @@ function createTableRow(item) {
       input.step = "0.01";
     }
 
-    input.addEventListener("change", () =>
-      updateField(item.id, field.key, input.value, cell)
-    );
-    input.addEventListener("keypress", (e) => {
-      if (e.key === "Enter") {
-        input.blur();
+    // Store PostgreSQL id and original value
+    input.setAttribute("data-id", item.id); // Changed from _id to id
+    input.setAttribute("data-field", field.key);
+    input.setAttribute("data-original", item[field.key] || "");
+
+    // Add change and blur events for edit
+    input.addEventListener("change", async () => {
+      const newValue = input.value;
+      const originalValue = input.getAttribute("data-original");
+      const itemId = input.getAttribute("data-id");
+      const fieldName = input.getAttribute("data-field");
+
+      if (newValue !== originalValue && itemId) {
+        console.log(`Updating ${fieldName} for item ${itemId} to ${newValue}`);
+        try {
+          await updateField(itemId, fieldName, newValue);
+          input.setAttribute("data-original", newValue);
+        } catch (error) {
+          input.value = originalValue;
+        }
       }
     });
 
@@ -85,11 +103,62 @@ function createTableRow(item) {
     row.appendChild(cell);
   });
 
-  // Add action button
-  const actionButton = createActionButton(item.id);
+  // Add action button with correct id
+  const actionButton = createActionButton(item.id); // Changed from _id to id
   row.appendChild(actionButton);
 
   return row;
+}
+
+async function updateField(id, field, value) {
+  if (!id || id === "undefined") {
+    console.error("Invalid item ID:", id);
+    return;
+  }
+
+  try {
+    // First get the current item data
+    const getResponse = await fetch(`${API_BASE_URL}/${id}`);
+    const currentItem = await getResponse.json();
+
+    if (!currentItem.success || !currentItem.data) {
+      throw new Error("Could not fetch current item data");
+    }
+
+    // Prepare update data with all required fields
+    const updateData = {
+      ...currentItem.data,
+      [field]: value,
+      // Ensure all required fields are present
+      article_no: field === "article_no" ? value : currentItem.data.article_no,
+      product_service: field === "product_service" ? value : currentItem.data.product_service,
+      price: field === "price" ? value : currentItem.data.price,
+    };
+
+    console.log("Sending update with data:", updateData);
+
+    const response = await fetch(`${API_BASE_URL}/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(updateData),
+    });
+
+    const result = await response.json();
+    console.log("Update response:", result);
+
+    if (!result.success) {
+      throw new Error(result.message || "Update failed");
+    }
+
+    // Refresh the table data after successful update
+    fetchPricelist();
+  } catch (error) {
+    console.error("Error updating field:", error);
+    alert("Failed to update field");
+    throw error;
+  }
 }
 
 function createActionButton(itemId) {
