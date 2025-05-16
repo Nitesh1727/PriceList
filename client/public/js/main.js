@@ -418,7 +418,7 @@ async function updateField(id, field, value) {
   }
 
   try {
-    // Get current item data first
+    // First get the current item data
     const getResponse = await fetch(`${API_BASE_URL}/${id}`);
     const currentItem = await getResponse.json();
 
@@ -426,14 +426,19 @@ async function updateField(id, field, value) {
       throw new Error("Could not fetch current item data");
     }
 
-    // Include all required fields in update
+    // Preserve all existing data and only update the changed field
     const updateData = {
-      article_no: field === "article_no" ? value : currentItem.data.article_no,
-      product_service:
-        field === "product_service" ? value : currentItem.data.product_service,
-      price: field === "price" ? parseFloat(value) : currentItem.data.price,
-      [field]: value,
+      ...currentItem.data, // Keep all existing data
+      [field]: value, // Only update the changed field
     };
+
+    // Ensure numeric fields are properly typed
+    if (field === "price" || field === "in_price") {
+      updateData[field] = parseFloat(value) || 0;
+    }
+    if (field === "in_stock") {
+      updateData[field] = parseInt(value) || 0;
+    }
 
     console.log("Sending update:", updateData);
 
@@ -451,7 +456,8 @@ async function updateField(id, field, value) {
     }
 
     console.log("Update successful");
-    await fetchPricelist(); // Refresh data after successful update
+    // Don't refresh the whole table, just update the value locally
+    return true;
   } catch (error) {
     console.error("Error updating field:", error);
     alert("Failed to update field");
