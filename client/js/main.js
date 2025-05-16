@@ -117,7 +117,7 @@ async function updateField(id, field, value) {
   }
 
   try {
-    // First get the current item data
+    // Get current item data first
     const getResponse = await fetch(`${API_BASE_URL}/${id}`);
     const currentItem = await getResponse.json();
 
@@ -125,17 +125,16 @@ async function updateField(id, field, value) {
       throw new Error("Could not fetch current item data");
     }
 
-    // Prepare update data with all required fields
+    // Include all required fields in update
     const updateData = {
-      ...currentItem.data,
-      [field]: value,
-      // Ensure all required fields are present
       article_no: field === "article_no" ? value : currentItem.data.article_no,
-      product_service: field === "product_service" ? value : currentItem.data.product_service,
-      price: field === "price" ? value : currentItem.data.price,
+      product_service:
+        field === "product_service" ? value : currentItem.data.product_service,
+      price: field === "price" ? parseFloat(value) : currentItem.data.price,
+      [field]: value,
     };
 
-    console.log("Sending update with data:", updateData);
+    console.log("Sending update:", updateData);
 
     const response = await fetch(`${API_BASE_URL}/${id}`, {
       method: "PUT",
@@ -146,14 +145,12 @@ async function updateField(id, field, value) {
     });
 
     const result = await response.json();
-    console.log("Update response:", result);
-
     if (!result.success) {
       throw new Error(result.message || "Update failed");
     }
 
-    // Refresh the table data after successful update
-    fetchPricelist();
+    console.log("Update successful");
+    await fetchPricelist(); // Refresh data after successful update
   } catch (error) {
     console.error("Error updating field:", error);
     alert("Failed to update field");
